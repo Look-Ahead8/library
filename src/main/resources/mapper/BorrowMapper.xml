@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tuling.library.dao.BorrowMapper" >
+  <resultMap id="BaseResultMap" type="com.tuling.library.bean.Borrow" >
+    <id column="borrow_id" property="borrowId" jdbcType="INTEGER" />
+    <result column="stu_id" property="stuId" jdbcType="INTEGER" />
+    <result column="book_id" property="bookId" jdbcType="INTEGER" />
+    <result column="borrow_date" property="borrowDate" jdbcType="TIMESTAMP" />
+    <result column="return_date" property="returnDate" jdbcType="TIMESTAMP" />
+    <result column="return_state" property="returnState" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    borrow_id, stu_id, book_id, borrow_date, return_date, return_state
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.tuling.library.bean.BorrowExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from borrow
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from borrow
+    where borrow_id = #{borrowId,jdbcType=INTEGER}
+  </select>
+  <select id="selectcountBorrow" resultType="java.util.Map">
+    SELECT stu_id,COUNT(*) AS countBorrow FROM  borrow GROUP BY stu_id LIMIT 10
+  </select>
+  <select id="isBookExists" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT * FROM borrow WHERE book_id=#{bookId} AND  return_state=0
+  </select>
+  <select id="selectByStuId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT * FROM borrow WHERE stu_id=#{stuId}
+  </select>
+  <select id="selectByBookId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT * FROM borrow WHERE book_id=#{bookId}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from borrow
+    where borrow_id = #{borrowId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.tuling.library.bean.BorrowExample" >
+    delete from borrow
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.tuling.library.bean.Borrow" useGeneratedKeys="true" keyProperty="borrowId" >
+    insert into borrow (stu_id, book_id, borrow_date, 
+      return_date, return_state)
+    values (#{stuId,jdbcType=INTEGER}, #{bookId,jdbcType=INTEGER}, #{borrowDate,jdbcType=TIMESTAMP}, 
+      #{returnDate,jdbcType=TIMESTAMP}, #{returnState,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.tuling.library.bean.Borrow" useGeneratedKeys="true" keyProperty="borrowId" >
+    insert into borrow
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="stuId != null" >
+        stu_id,
+      </if>
+      <if test="bookId != null" >
+        book_id,
+      </if>
+      <if test="borrowDate != null" >
+        borrow_date,
+      </if>
+      <if test="returnDate != null" >
+        return_date,
+      </if>
+      <if test="returnState != null" >
+        return_state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="stuId != null" >
+        #{stuId,jdbcType=INTEGER},
+      </if>
+      <if test="bookId != null" >
+        #{bookId,jdbcType=INTEGER},
+      </if>
+      <if test="borrowDate != null" >
+        #{borrowDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnDate != null" >
+        #{returnDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnState != null" >
+        #{returnState,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.tuling.library.bean.BorrowExample" resultType="java.lang.Integer" >
+    select count(*) from borrow
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <select id="isBorrow" parameterType="java.util.Map" resultType="boolean">
+    SELECT * FROM borrow WHERE stu_id=#{stuId} AND book_id=#{bookId}
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update borrow
+    <set >
+      <if test="record.borrowId != null" >
+        borrow_id = #{record.borrowId,jdbcType=INTEGER},
+      </if>
+      <if test="record.stuId != null" >
+        stu_id = #{record.stuId,jdbcType=INTEGER},
+      </if>
+      <if test="record.bookId != null" >
+        book_id = #{record.bookId,jdbcType=INTEGER},
+      </if>
+      <if test="record.borrowDate != null" >
+        borrow_date = #{record.borrowDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.returnDate != null" >
+        return_date = #{record.returnDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.returnState != null" >
+        return_state = #{record.returnState,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update borrow
+    set borrow_id = #{record.borrowId,jdbcType=INTEGER},
+      stu_id = #{record.stuId,jdbcType=INTEGER},
+      book_id = #{record.bookId,jdbcType=INTEGER},
+      borrow_date = #{record.borrowDate,jdbcType=TIMESTAMP},
+      return_date = #{record.returnDate,jdbcType=TIMESTAMP},
+      return_state = #{record.returnState,jdbcType=TINYINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.tuling.library.bean.Borrow" >
+    update borrow
+    <set >
+      <if test="stuId != null" >
+        stu_id = #{stuId,jdbcType=INTEGER},
+      </if>
+      <if test="bookId != null" >
+        book_id = #{bookId,jdbcType=INTEGER},
+      </if>
+      <if test="borrowDate != null" >
+        borrow_date = #{borrowDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnDate != null" >
+        return_date = #{returnDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="returnState != null" >
+        return_state = #{returnState,jdbcType=TINYINT},
+      </if>
+    </set>
+    where borrow_id = #{borrowId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.tuling.library.bean.Borrow" >
+    update borrow
+    set stu_id = #{stuId,jdbcType=INTEGER},
+      book_id = #{bookId,jdbcType=INTEGER},
+      borrow_date = #{borrowDate,jdbcType=TIMESTAMP},
+      return_date = #{returnDate,jdbcType=TIMESTAMP},
+      return_state = #{returnState,jdbcType=TINYINT}
+    where borrow_id = #{borrowId,jdbcType=INTEGER}
+  </update>
+</mapper>
